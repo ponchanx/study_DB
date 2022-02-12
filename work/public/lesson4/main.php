@@ -35,6 +35,16 @@ try {
          ('thanks', 4),
          ('Arigato', 15)"
     );
+    // $n = 10;
+    $n = '10 OR 1=1';
+
+     //10より小さいいいね（likes)を消す。
+    // $pdo->query("DELETE FROM posts WHERE likes < 10 ");
+
+     /*$n(変数)の値を直接書いてはいけない。
+       1=1は常にTRUEになるため片方がTRUEなら常にTUREになるため全て消されてしまことになる
+     */  
+    $pdo->query("DELETE FROM posts WHERE likes < $n ");
 
     $stmt = $pdo->query("SELECT * FROM posts");  
     $posts = $stmt->fetchAll();
