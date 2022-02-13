@@ -32,8 +32,8 @@ try {
          ('thanks', 4),
          ('Arigato', 15)"
     );
-    $n = 10;
-    // $n = '10 OR 1=1';
+    // $n = 10;
+    $n = '10 OR 1=1';
 
     
     // // $pdo->query("DELETE FROM posts WHERE likes < 10"); 

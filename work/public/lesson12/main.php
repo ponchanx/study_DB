@@ -1,7 +1,15 @@
 <?php
 
-//bindparam()で変数を紐付けしよう
 
+//トランザクションを使ってみよう
+
+class Post
+{
+    public function show()
+    {
+        echo "$this->message ($this->likes)" . PHP_EOL;
+    }
+}
 try {
     $pdo = new PDO(
         'mysql:host=db;dbname=myapp;charset=utf8mb4', 
@@ -32,42 +40,37 @@ try {
          ('Arigato', 15)"
     );
     
-    $message = 'Merci';
-    $likes = 8;
-    $stmt = $pdo->prepare(
-        "INSERT INTO
-         posts (message, likes)
-        VALUES
-         (:message, :likes)"
+    /*何らかの障害などの影響を受けないようにトランザクションを使う
+     データの書き換えられたりすると、整合性が取れなくなるため
+     */
+    $pdo->beginTransaction();
+
+    /*上記の'Thanks'に+1、'thanks'は-1にしたかた時。
+    　間違っていいねした時。UPDATEを使って
+    */
+    $stmt = $pdo->query(
+        "UPDATE posts SET likes = likes + 1 WHERE id = 1"
     );
-    //新しくレコードを追加した場合、bindValueを消しParamにできる
-    $stmt->bindParam('message', $message, PDO::PARAM_STR); 
-    $stmt->bindParam('likes', $likes, PDO::PARAM_INT);     
-    $stmt->execute(); 
+    $stmt = $pdo->query(
+        "UPDATE posts SET likes = likes - 1 WHERE id = 2"
+    );
+    //commitで囲ってあげればよい
+    $pdo->commit();
 
-
-    $message = 'Gracias';
-    $likes = 5;
-    // $stmt->bindValue('message', $message, PDO::PARAM_STR); 
-    // $stmt->bindValue('likes', $likes, PDO::PARAM_INT);     
-    $stmt->execute(); 
-
-    $message = 'Danke';
-    $likes = 11;
-    $stmt->execute();
-
+ 
     $stmt = $pdo->query("SELECT * FROM posts");  
-    $posts = $stmt->fetchAll();
+    $posts = $stmt->fetchAll(PDO::FETCH_CLASS, 'Post');
     foreach ($posts as $post) {
-        printf(
-            '%s (%d)' . PHP_EOL,
-            $post['message'],
-            $post['likes']
-        );
+        // printf(
+        //     '%s (%d)' . PHP_EOL,
+        //     $post['message'],
+        //     $post['likes']
+        // );
+        $post->show();
     }
     
 } catch (PDOException $e) {
     echo $e->getMessage() . PHP_EOL;
     exit;
 
-} 
+}     

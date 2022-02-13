@@ -1,7 +1,19 @@
 <?php
 
-//bindparam()で変数を紐付けしよう
+//PDO::FETCH_CLASSを使ってみよう
 
+class Post
+{
+    //全てがpublicの場合自動的にカラム名が作られるので省略できる
+    // public $id;
+    // public $message;
+    // public $likes;
+
+    public function show()
+    {
+        echo "$this->message ($this->likes)" . PHP_EOL;
+    }
+}
 try {
     $pdo = new PDO(
         'mysql:host=db;dbname=myapp;charset=utf8mb4', 
@@ -31,43 +43,20 @@ try {
          ('thanks', 4),
          ('Arigato', 15)"
     );
-    
-    $message = 'Merci';
-    $likes = 8;
-    $stmt = $pdo->prepare(
-        "INSERT INTO
-         posts (message, likes)
-        VALUES
-         (:message, :likes)"
-    );
-    //新しくレコードを追加した場合、bindValueを消しParamにできる
-    $stmt->bindParam('message', $message, PDO::PARAM_STR); 
-    $stmt->bindParam('likes', $likes, PDO::PARAM_INT);     
-    $stmt->execute(); 
-
-
-    $message = 'Gracias';
-    $likes = 5;
-    // $stmt->bindValue('message', $message, PDO::PARAM_STR); 
-    // $stmt->bindValue('likes', $likes, PDO::PARAM_INT);     
-    $stmt->execute(); 
-
-    $message = 'Danke';
-    $likes = 11;
-    $stmt->execute();
-
+ 
     $stmt = $pdo->query("SELECT * FROM posts");  
-    $posts = $stmt->fetchAll();
+    $posts = $stmt->fetchAll(PDO::FETCH_CLASS, 'Post');
     foreach ($posts as $post) {
-        printf(
-            '%s (%d)' . PHP_EOL,
-            $post['message'],
-            $post['likes']
-        );
+        // printf(
+        //     '%s (%d)' . PHP_EOL,
+        //     $post['message'],
+        //     $post['likes']
+        // );
+        $post->show();
     }
     
 } catch (PDOException $e) {
     echo $e->getMessage() . PHP_EOL;
     exit;
 
-} 
+}   

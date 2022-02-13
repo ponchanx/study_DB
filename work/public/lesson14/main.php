@@ -1,7 +1,5 @@
 <?php
 
-//bindparam()で変数を紐付けしよう
-
 try {
     $pdo = new PDO(
         'mysql:host=db;dbname=myapp;charset=utf8mb4', 
@@ -31,30 +29,17 @@ try {
          ('thanks', 4),
          ('Arigato', 15)"
     );
-    
-    $message = 'Merci';
-    $likes = 8;
-    $stmt = $pdo->prepare(
-        "INSERT INTO
-         posts (message, likes)
-        VALUES
-         (:message, :likes)"
-    );
-    //新しくレコードを追加した場合、bindValueを消しParamにできる
-    $stmt->bindParam('message', $message, PDO::PARAM_STR); 
-    $stmt->bindParam('likes', $likes, PDO::PARAM_INT);     
-    $stmt->execute(); 
+ 
 
 
-    $message = 'Gracias';
-    $likes = 5;
-    // $stmt->bindValue('message', $message, PDO::PARAM_STR); 
-    // $stmt->bindValue('likes', $likes, PDO::PARAM_INT);     
-    $stmt->execute(); 
 
-    $message = 'Danke';
-    $likes = 11;
-    $stmt->execute();
+
+
+
+
+
+
+
 
     $stmt = $pdo->query("SELECT * FROM posts");  
     $posts = $stmt->fetchAll();
@@ -70,4 +55,4 @@ try {
     echo $e->getMessage() . PHP_EOL;
     exit;
 
-} 
+}   
